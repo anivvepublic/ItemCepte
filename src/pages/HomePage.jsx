@@ -56,7 +56,6 @@ function HomePage() {
 
   async function fetchProductsByCategory(category) {
     setCategoryLoading(true)
-    // Küçük harf sorgusu
     const { data, error } = await supabase
       .from('products')
       .select('*')
@@ -64,25 +63,25 @@ function HomePage() {
       .eq('category', category.toLowerCase())
       .order('created_at', { ascending: false })
 
-    if (!error && data) {
-      setFilteredProducts(data)
-    } else {
-      setFilteredProducts([])
-    }
+    if (!error && data) setFilteredProducts(data)
+    else setFilteredProducts([])
     setCategoryLoading(false)
   }
 
   return (
     <div>
       <HeroSection />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-3">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 md:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
+          {/* Sol Sidebar - Mobilde gizlenir, tablette görünür */}
+          <div className="lg:col-span-3 hidden md:block">
             <CategorySidebar onSelectCategory={setSelectedCategory} />
           </div>
-          <div className="lg:col-span-6" id="products-section">
-            <div className="flex justify-between items-center mb-4 flex-wrap gap-2">
-              <h2 className="text-xl font-bold text-white border-l-4 border-[#38BDF8] pl-3">
+
+          {/* Ana içerik */}
+          <div className="lg:col-span-6 col-span-1" id="products-section">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+              <h2 className="text-lg md:text-xl font-bold text-white border-l-4 border-[#38BDF8] pl-3">
                 {selectedCategory ? `${selectedCategory} İlanları` : "Öne Çıkan İlanlar"}
               </h2>
               {selectedCategory && (
@@ -99,7 +98,9 @@ function HomePage() {
             </div>
             <ProductGrid products={filteredProducts} loading={loading || categoryLoading} />
           </div>
-          <div className="lg:col-span-3">
+
+          {/* Sağ Sidebar - Mobilde gizlenir */}
+          <div className="lg:col-span-3 hidden lg:block">
             <SellToUs />
           </div>
         </div>

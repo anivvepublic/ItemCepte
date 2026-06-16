@@ -5,6 +5,7 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
   }
   body {
     background: linear-gradient(135deg, #0F172A 0%, #0A0F1F 50%, #0F172A 100%);
@@ -12,6 +13,12 @@
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
   }
+  /* Mobil dokunmatik iyileştirmeler */
+  button, a, [role="button"] {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  /* Kaydırma çubuğu sadece masaüstünde göster */
   ::-webkit-scrollbar {
     width: 6px;
   }
@@ -38,13 +45,19 @@
     background: rgba(30, 41, 59, 0.8);
     backdrop-filter: blur(8px);
     border: 1px solid rgba(56, 189, 248, 0.2);
-    border-radius: 1.5rem;
+    border-radius: 1rem;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
   .glass-card:hover {
     border-color: #22C55E;
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 25px 40px -15px rgba(34, 197, 94, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 30px -12px rgba(34, 197, 94, 0.2);
+  }
+  /* Mobil için hover efektini kaldır (dokunmatik için) */
+  @media (max-width: 768px) {
+    .glass-card:hover {
+      transform: none;
+    }
   }
   .neon-text {
     text-shadow: 0 0 10px #22C55E, 0 0 20px #22C55E, 0 0 30px #22C55E80;
@@ -53,53 +66,24 @@
     background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
     color: white;
     font-weight: 700;
-    padding: 0.75rem 2rem;
-    border-radius: 3rem;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s;
-    box-shadow: 0 0 15px rgba(34, 197, 94, 0.5);
-  }
-  .btn-primary-glow:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(34, 197, 94, 0.8);
-  }
-  .btn-primary-glow::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-  }
-  .btn-primary-glow:hover::before {
-    width: 300px;
-    height: 300px;
-  }
-  .btn-secondary-glow {
-    background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
-    color: #0F172A;
-    font-weight: 700;
     padding: 0.75rem 1.5rem;
     border-radius: 3rem;
     transition: all 0.3s;
-    box-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+    touch-action: manipulation;
   }
-  .btn-secondary-glow:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 25px rgba(251, 191, 36, 0.8);
+  .btn-primary-glow:active {
+    transform: scale(0.97);
   }
   .input-modern {
     background: rgba(30, 41, 59, 0.9);
     border: 1px solid #334155;
     border-radius: 2rem;
-    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    padding: 0.75rem 1rem 0.75rem 2.5rem;
     color: #F1F5F9;
+    font-size: 1rem;
     transition: all 0.3s;
+    width: 100%;
   }
   .input-modern:focus {
     outline: none;
@@ -116,37 +100,11 @@
       transform: translateY(0);
     }
   }
-  @keyframes pulse {
-    0%, 100% {
-      opacity: 1;
-    }
-    50% {
-      opacity: 0.5;
-    }
-  }
   @keyframes float {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
-  }
-  @keyframes glow {
-    0%, 100% {
-      text-shadow: 0 0 5px #22C55E, 0 0 10px #22C55E;
-    }
-    50% {
-      text-shadow: 0 0 20px #22C55E, 0 0 30px #38BDF8;
-    }
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
   }
   .animate-fadeInUp {
     animation: fadeInUp 0.6s ease-out forwards;
-  }
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-  .animate-glow {
-    animation: glow 2s ease-in-out infinite;
   }
 }

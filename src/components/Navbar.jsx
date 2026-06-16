@@ -6,14 +6,13 @@ function Navbar({ user, onAuthClick, onLogout }) {
   const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [balance, setBalance] = useState(0)
   const searchRef = useRef(null)
   const profileRef = useRef(null)
 
   useEffect(() => {
-    if (user) {
-      fetchUserBalance()
-    }
+    if (user) fetchUserBalance()
   }, [user])
 
   async function fetchUserBalance() {
@@ -22,12 +21,8 @@ function Navbar({ user, onAuthClick, onLogout }) {
       .select('balance')
       .eq('auth_id', user.id)
       .single()
-    
-    if (!error && data) {
-      setBalance(data.balance || 0)
-    } else {
-      setBalance(0)
-    }
+    if (!error && data) setBalance(data.balance || 0)
+    else setBalance(0)
   }
 
   useEffect(() => {
@@ -49,7 +44,6 @@ function Navbar({ user, onAuthClick, onLogout }) {
       setShowSuggestions(false)
       return
     }
-
     const fetchSuggestions = async () => {
       const { data: productsData } = await supabase
         .from('products')
@@ -57,7 +51,6 @@ function Navbar({ user, onAuthClick, onLogout }) {
         .eq('status', 'active')
         .ilike('category', `%${search}%`)
         .limit(10)
-
       const dbCategories = productsData ? [...new Set(productsData.map(p => p.category))] : []
       setSuggestions(dbCategories.slice(0, 8))
       setShowSuggestions(dbCategories.length > 0)
@@ -71,30 +64,27 @@ function Navbar({ user, onAuthClick, onLogout }) {
     window.dispatchEvent(new CustomEvent('categorySearch', { detail: category }))
   }
 
-  const getInitials = (email) => {
-    return email?.charAt(0).toUpperCase() || 'U'
-  }
+  const getInitials = (email) => email?.charAt(0).toUpperCase() || 'U'
 
   return (
-    <nav className="glass fixed top-0 left-0 right-0 z-50 px-6 py-3">
-      <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-3">
-        {/* Logo */}
+    <nav className="glass fixed top-0 left-0 right-0 z-50 px-4 py-2 md:px-6 md:py-3">
+      <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2">
+        {/* Logo - Mobilde küçülür */}
         <div className="relative group cursor-pointer transition-all duration-300 hover:scale-105">
-          <div className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] rounded-2xl px-6 py-2.5 border border-[#22C55E]/40 shadow-2xl shadow-[#22C55E]/20">
-            <div className="flex items-center gap-2">
-              <svg className="w-6 h-6 text-[#22C55E] drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24">
+          <div className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] rounded-xl md:rounded-2xl px-3 py-1.5 md:px-6 md:py-2.5 border border-[#22C55E]/40 shadow-2xl shadow-[#22C55E]/20">
+            <div className="flex items-center gap-1.5 md:gap-2">
+              <svg className="w-5 h-5 md:w-6 md:h-6 text-[#22C55E]" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
               </svg>
-              <span className="text-2xl font-black tracking-wider bg-gradient-to-r from-[#22C55E] via-[#38BDF8] to-[#22C55E] bg-clip-text text-transparent drop-shadow-md">
+              <span className="text-base md:text-2xl font-black tracking-wider bg-gradient-to-r from-[#22C55E] via-[#38BDF8] to-[#22C55E] bg-clip-text text-transparent">
                 ITEMCEPTE
               </span>
             </div>
           </div>
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-16 h-0.5 bg-gradient-to-r from-[#22C55E] to-[#38BDF8] rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300"></div>
         </div>
 
-        {/* Arama Çubuğu */}
-        <div className="relative flex-1 max-w-md" ref={searchRef}>
+        {/* Arama - Mobilde tam genişlik */}
+        <div className="relative w-full md:flex-1 md:max-w-md order-last md:order-none mt-2 md:mt-0" ref={searchRef}>
           <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#38BDF8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
@@ -104,37 +94,36 @@ function Navbar({ user, onAuthClick, onLogout }) {
             onChange={(e) => setSearch(e.target.value)}
             onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
             placeholder="Valorant, Mobile, CS2 ara..."
-            className="input-modern w-full pl-9 text-sm"
+            className="input-modern w-full pl-9 text-sm md:text-base"
           />
-          
           {showSuggestions && suggestions.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-[#1E293B] border border-[#334155] rounded-xl overflow-hidden z-50 shadow-2xl">
               {suggestions.map((suggestion, idx) => (
                 <div
                   key={idx}
                   onClick={() => handleSuggestionClick(suggestion)}
-                  className="px-4 py-2 hover:bg-[#334155] cursor-pointer transition flex items-center gap-2"
+                  className="px-4 py-2 hover:bg-[#334155] cursor-pointer transition flex items-center gap-2 text-sm"
                 >
                   <svg className="w-4 h-4 text-[#38BDF8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                  <span className="text-sm text-white">{suggestion}</span>
-                  <span className="text-xs text-gray-500 ml-auto">Kategori</span>
+                  <span className="text-white">{suggestion}</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        {/* Profil / Bakiye / Giriş Butonları */}
-        <div className="flex gap-3 items-center" ref={profileRef}>
+        {/* Profil / Butonlar - Mobilde sağa hizalanır */}
+        <div className="flex items-center gap-2 md:gap-3" ref={profileRef}>
           {user ? (
-            <div className="relative">
+            <>
+              {/* Mobilde sadece avatar, masaüstünde bakiye göster */}
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
-                className="flex items-center gap-3 bg-[#1E293B] hover:bg-[#334155] rounded-full px-3 py-1.5 transition"
+                className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#334155] rounded-full px-2 py-1 md:px-3 md:py-1.5 transition"
               >
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#22C55E] to-[#38BDF8] flex items-center justify-center text-sm font-bold">
+                <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-gradient-to-r from-[#22C55E] to-[#38BDF8] flex items-center justify-center text-sm font-bold">
                   {getInitials(user.email)}
                 </div>
                 <div className="hidden md:block text-left">
@@ -145,16 +134,15 @@ function Navbar({ user, onAuthClick, onLogout }) {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-
               {showProfileMenu && (
-                <div className="absolute right-0 mt-2 w-64 bg-[#1E293B] border border-[#334155] rounded-xl shadow-2xl overflow-hidden z-50">
-                  <div className="p-4 border-b border-[#334155]">
-                    <p className="text-sm font-semibold text-white">{user.user_metadata?.full_name || user.email?.split('@')[0]}</p>
+                <div className="absolute right-0 top-full mt-2 w-56 md:w-64 bg-[#1E293B] border border-[#334155] rounded-xl shadow-2xl overflow-hidden z-50">
+                  <div className="p-3 md:p-4 border-b border-[#334155]">
+                    <p className="text-sm font-semibold text-white truncate">{user.user_metadata?.full_name || user.email?.split('@')[0]}</p>
                     <p className="text-xs text-gray-400 truncate">{user.email}</p>
                   </div>
-                  <div className="p-4 border-b border-[#334155]">
+                  <div className="p-3 md:p-4 border-b border-[#334155]">
                     <p className="text-xs text-gray-400">Güncel Bakiye</p>
-                    <p className="text-2xl font-bold text-[#22C55E]">{balance} TL</p>
+                    <p className="text-xl md:text-2xl font-bold text-[#22C55E]">{balance} TL</p>
                   </div>
                   <div className="p-2">
                     <button className="w-full text-left px-3 py-2 text-sm text-gray-300 hover:bg-[#334155] rounded-lg transition flex items-center gap-2">
@@ -170,25 +158,22 @@ function Navbar({ user, onAuthClick, onLogout }) {
                       Bakiye Yükle
                     </button>
                     <hr className="my-2 border-[#334155]" />
-                    <button
-                      onClick={onLogout}
-                      className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-[#334155] rounded-lg transition flex items-center gap-2"
-                    >
+                    <button onClick={onLogout} className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-[#334155] rounded-lg transition flex items-center gap-2">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                       </svg>
-                      Çıkış Yap
+                      Çıkış
                     </button>
                   </div>
                 </div>
               )}
-            </div>
+            </>
           ) : (
             <>
-              <button onClick={onAuthClick} className="bg-[#1E293B] text-white px-5 py-1.5 rounded-full text-sm hover:bg-[#334155] transition">
+              <button onClick={onAuthClick} className="bg-[#1E293B] text-white px-3 py-1.5 md:px-5 md:py-1.5 rounded-full text-xs md:text-sm hover:bg-[#334155] transition">
                 Giriş
               </button>
-              <button onClick={onAuthClick} className="btn-primary-glow px-5 py-1.5 text-sm">
+              <button onClick={onAuthClick} className="btn-primary-glow px-3 py-1.5 md:px-5 md:py-1.5 text-xs md:text-sm">
                 Kayıt Ol
               </button>
             </>
