@@ -5,33 +5,72 @@
 @layer base {
   html, body, #root {
     min-height: 100vh;
-    min-height: 100dvh;
     background-color: #0F172A;
     margin: 0;
     padding: 0;
-  }
-  html {
-    scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
   }
   body {
-    background: linear-gradient(135deg, #0F172A 0%, #0A0F1F 50%, #0F172A 100%);
-    color: #F1F5F9;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  /* Dokunmatik iyileştirmeler */
-  button, a, [role="button"] {
-    cursor: pointer;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
+}
+
+@layer components {
+  .glass-card {
+    background: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(51, 65, 85, 0.4);
+    border-radius: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
-  /* Kaydırma çubuğu */
+  .glass {
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(56, 189, 248, 0.1);
+  }
+  .input-modern {
+    background: rgba(30, 41, 59, 0.9);
+    border: 1px solid #334155;
+    border-radius: 2rem;
+    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    color: #F1F5F9;
+    font-size: 0.875rem;
+    transition: all 0.3s;
+    width: 100%;
+  }
+  .input-modern:focus {
+    outline: none;
+    border-color: #38BDF8;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+  }
+  .btn-primary-glow {
+    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+    color: white;
+    font-weight: 700;
+    padding: 0.5rem 1.25rem;
+    border-radius: 3rem;
+    transition: all 0.3s;
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+    min-height: 44px;
+    min-width: 44px;
+  }
+  .btn-primary-glow:hover {
+    transform: scale(1.03);
+    box-shadow: 0 0 25px rgba(34, 197, 94, 0.5);
+  }
+  .btn-primary-glow:active {
+    transform: scale(0.97);
+  }
+  .neon-text {
+    text-shadow: 0 0 10px #22C55E, 0 0 20px #22C55E, 0 0 30px #22C55E80;
+  }
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
   }
   ::-webkit-scrollbar-track {
     background: #1E293B;
@@ -44,71 +83,60 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #38BDF8;
   }
-}
-
-@layer components {
-  .glass {
-    background: rgba(15, 23, 42, 0.7);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(56, 189, 248, 0.15);
-  }
-  .glass-card {
-    background: rgba(30, 41, 59, 0.8);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(56, 189, 248, 0.2);
-    border-radius: 1rem;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .glass-card:hover {
-    border-color: #22C55E;
-    transform: translateY(-4px);
-    box-shadow: 0 20px 30px -12px rgba(34, 197, 94, 0.2);
-  }
-  @media (max-width: 768px) {
-    .glass-card:hover {
-      transform: none;
-    }
-  }
-  .neon-text {
-    text-shadow: 0 0 10px #22C55E, 0 0 20px #22C55E, 0 0 30px #22C55E80;
-  }
-  .btn-primary-glow {
-    background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
-    color: white;
-    font-weight: 700;
-    padding: 0.75rem 1.5rem;
-    border-radius: 3rem;
-    transition: all 0.3s;
-    box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
-    touch-action: manipulation;
-  }
-  .btn-primary-glow:active {
-    transform: scale(0.97);
-  }
-  .input-modern {
-    background: rgba(30, 41, 59, 0.9);
-    border: 1px solid #334155;
-    border-radius: 2rem;
-    padding: 0.75rem 1rem 0.75rem 2.5rem;
-    color: #F1F5F9;
-    font-size: 1rem;
-    transition: all 0.3s;
-    width: 100%;
-  }
-  .input-modern:focus {
-    outline: none;
-    border-color: #38BDF8;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
-  }
   @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(30px); }
+    from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
   }
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
   }
   .animate-fadeInUp {
-    animation: fadeInUp 0.6s ease-out forwards;
+    animation: fadeInUp 0.4s ease-out forwards;
+  }
+  .animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
+  }
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+}
+
+/* MOBİL UYUM */
+@media (max-width: 480px) {
+  .input-modern {
+    font-size: 0.75rem;
+    padding: 0.5rem 0.75rem 0.5rem 2rem;
+  }
+  .btn-primary-glow {
+    padding: 0.4rem 1rem;
+    font-size: 0.75rem;
+    min-height: 40px;
+    min-width: 40px;
+  }
+  .glass-card {
+    border-radius: 0.75rem;
+  }
+}
+@media (max-width: 768px) {
+  .glass-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+  .btn-primary-glow:hover {
+    transform: none;
+  }
+}
+@media (pointer: coarse) {
+  button, a, [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  input, select, textarea {
+    font-size: 16px !important;
   }
 }

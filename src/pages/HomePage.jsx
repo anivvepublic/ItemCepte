@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react'
 import HeroSection from '../components/HeroSection'
-import CategorySidebar from '../components/CategorySidebar'
 import ProductGrid from '../components/ProductGrid'
-import SellToUs from '../components/SellToUs'
 import { supabase } from '../lib/supabaseClient'
 
 function HomePage() {
@@ -11,6 +9,14 @@ function HomePage() {
   const [loading, setLoading] = useState(true)
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [categoryLoading, setCategoryLoading] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const category = params.get('category')
+    if (category) {
+      setSelectedCategory(category)
+    }
+  }, [])
 
   useEffect(() => {
     fetchAllProducts()
@@ -72,14 +78,8 @@ function HomePage() {
     <div>
       <HeroSection />
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 md:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
-          {/* Sol Sidebar - Tablet ve üstü görünür */}
-          <div className="hidden md:block lg:col-span-3">
-            <CategorySidebar onSelectCategory={setSelectedCategory} />
-          </div>
-
-          {/* Ana içerik - her zaman tam genişlik */}
-          <div className="lg:col-span-6 md:col-span-8 col-span-1" id="products-section">
+        <div className="grid grid-cols-1 gap-4 md:gap-6">
+          <div className="col-span-1" id="products-section">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
               <h2 className="text-lg md:text-xl font-bold text-white border-l-4 border-[#38BDF8] pl-3">
                 {selectedCategory ? `${selectedCategory} İlanları` : "Öne Çıkan İlanlar"}
@@ -97,11 +97,6 @@ function HomePage() {
               )}
             </div>
             <ProductGrid products={filteredProducts} loading={loading || categoryLoading} />
-          </div>
-
-          {/* Sağ Sidebar - Sadece masaüstü */}
-          <div className="hidden lg:block lg:col-span-3">
-            <SellToUs />
           </div>
         </div>
       </div>
