@@ -1,13 +1,37 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-// ... categoryImages aynı (değişmedi)
+const categoryImages = {
+  "valorant": "https://www.freetogame.com/g/valorant/background.jpg",
+  "cs2": "https://www.freetogame.com/g/cs2/background.jpg",
+  "league of legends": "https://www.freetogame.com/g/league-of-legends/background.jpg",
+  "apex legends": "https://www.freetogame.com/g/apex-legends/background.jpg",
+  "overwatch 2": "https://www.freetogame.com/g/overwatch-2/background.jpg",
+  "rainbow six siege": "https://www.freetogame.com/g/rainbow-six-siege/background.jpg",
+  "call of duty": "https://www.freetogame.com/g/call-of-duty-hq/background.jpg",
+  "rust": "https://www.freetogame.com/g/rust/background.jpg",
+  "steam/epic": "https://cdn.cloudflare.steamstatic.com/steam/apps/221100/header.jpg",
+  "pubg mobile": "https://www.pubgmobile.com/static/images/index/bg/bg.jpg",
+  "mobile legends": "https://cdn2.unrealengine.com/mobile-legends-1920x1080-05c5c5c5c5c5.jpg",
+  "call of duty mobile": "https://www.callofduty.com/content/dam/atvi/callofduty/cod-touchui/blog/hero/mw/CODM_S5_BP_Hero.jpg",
+  "genshin impact": "https://upload-os-bbs.mihoyo.com/upload/2021/09/28/124142432.png",
+  "free fire": "https://images.garena.com/image/2024/01/free-fire-cover.jpg",
+  "brawl stars": "https://cdn.supercell.com/images/brawlstars/brawl-stars-cover.jpg",
+  "clash royale": "https://cdn.supercell.com/images/clashroyale/cr-cover.jpg",
+  "wild rift": "https://images.contentstack.io/v3/assets/blt370b3f3f6e5e5e5e/blt3f2f7d9d2e5c5c5e/wild-rift-cover.jpg",
+  "rise of kingdoms": "https://cdn2.unrealengine.com/rise-of-kingdoms-cover.jpg",
+  "honor of kings": "https://cdn2.unrealengine.com/honor-of-kings-cover.jpg",
+  "standoff 2": "https://standoff2.com/static/images/standoff2-cover.jpg",
+  "critical ops": "https://www.criticalopsgame.com/images/co-cover.jpg",
+}
 
 function ProductCard({ id, title, price, image_url, rating = 4.5, verified = true, category }) {
   const [imgError, setImgError] = useState(false)
   const navigate = useNavigate()
-
-  // ... displayImage aynı
+  
+  const categoryKey = category?.toLowerCase() || ""
+  const fallbackImage = "https://www.freetogame.com/assets/images/freetogame-logo.png"
+  const displayImage = image_url || (categoryImages[categoryKey] || fallbackImage)
 
   const handleClick = () => navigate(`/product/${id}`)
 

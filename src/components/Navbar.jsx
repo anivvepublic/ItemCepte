@@ -6,7 +6,6 @@ function Navbar({ user, onAuthClick, onLogout }) {
   const [suggestions, setSuggestions] = useState([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
-  const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [balance, setBalance] = useState(0)
   const searchRef = useRef(null)
   const profileRef = useRef(null)
@@ -69,7 +68,7 @@ function Navbar({ user, onAuthClick, onLogout }) {
   return (
     <nav className="glass fixed top-0 left-0 right-0 z-50 px-4 py-2 md:px-6 md:py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2">
-        {/* Logo - Mobilde küçülür */}
+        {/* Logo */}
         <div className="relative group cursor-pointer transition-all duration-300 hover:scale-105">
           <div className="bg-gradient-to-r from-[#0F172A] to-[#1E293B] rounded-xl md:rounded-2xl px-3 py-1.5 md:px-6 md:py-2.5 border border-[#22C55E]/40 shadow-2xl shadow-[#22C55E]/20">
             <div className="flex items-center gap-1.5 md:gap-2">
@@ -83,7 +82,7 @@ function Navbar({ user, onAuthClick, onLogout }) {
           </div>
         </div>
 
-        {/* Arama - Mobilde tam genişlik */}
+        {/* Arama - mobilde tam genişlik */}
         <div className="relative w-full md:flex-1 md:max-w-md order-last md:order-none mt-2 md:mt-0" ref={searchRef}>
           <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#38BDF8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -114,11 +113,10 @@ function Navbar({ user, onAuthClick, onLogout }) {
           )}
         </div>
 
-        {/* Profil / Butonlar - Mobilde sağa hizalanır */}
+        {/* Profil / Butonlar */}
         <div className="flex items-center gap-2 md:gap-3" ref={profileRef}>
           {user ? (
             <>
-              {/* Mobilde sadece avatar, masaüstünde bakiye göster */}
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#334155] rounded-full px-2 py-1 md:px-3 md:py-1.5 transition"

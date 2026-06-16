@@ -5,7 +5,7 @@ function ProductGrid({ products, loading }) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
         {[...Array(6)].map((_, i) => (
-          <div key={i} className="glass-card h-64 md:h-80 animate-pulse"></div>
+          <div key={i} className="glass-card h-56 md:h-72 animate-pulse"></div>
         ))}
       </div>
     )
@@ -25,7 +25,7 @@ function ProductGrid({ products, loading }) {
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
-      {products.map((product, idx) => (
+      {products.map((product) => (
         <div key={product.id} className="animate-fadeInUp">
           <ProductCard {...product} />
         </div>

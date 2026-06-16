@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 @layer base {
+  html, body, #root {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: #0F172A;
+    margin: 0;
+    padding: 0;
+  }
   html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent;
@@ -12,15 +19,19 @@
     color: #F1F5F9;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  /* Mobil dokunmatik iyileştirmeler */
+  /* Dokunmatik iyileştirmeler */
   button, a, [role="button"] {
     cursor: pointer;
     touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
   }
-  /* Kaydırma çubuğu sadece masaüstünde göster */
+  /* Kaydırma çubuğu */
   ::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
     background: #1E293B;
@@ -53,7 +64,6 @@
     transform: translateY(-4px);
     box-shadow: 0 20px 30px -12px rgba(34, 197, 94, 0.2);
   }
-  /* Mobil için hover efektini kaldır (dokunmatik için) */
   @media (max-width: 768px) {
     .glass-card:hover {
       transform: none;
@@ -91,14 +101,8 @@
     box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
   }
   @keyframes fadeInUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
   }
   @keyframes float {
     0%, 100% { transform: translateY(0px); }

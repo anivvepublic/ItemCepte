@@ -4,16 +4,19 @@ import Navbar from './components/Navbar'
 import HomePage from './pages/HomePage'
 import ProductDetail from './pages/ProductDetail'
 import AuthModal from './components/AuthModal'
+import DeviceDetector from './components/DeviceDetector'
 import { supabase } from './lib/supabaseClient'
 
 function App() {
   const [authOpen, setAuthOpen] = useState(false)
   const [user, setUser] = useState(null)
   const [toast, setToast] = useState(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
+      setLoading(false)
     })
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
@@ -31,9 +34,21 @@ function App() {
     setTimeout(() => setToast(null), 3000)
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[#22C55E] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-gray-400 mt-4">Yükleniyor...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <BrowserRouter>
-      <div className="min-h-screen">
+      <div className="min-h-screen bg-[#0F172A]">
+        <DeviceDetector />
         <Navbar user={user} onAuthClick={() => setAuthOpen(true)} onLogout={handleLogout} />
         <Routes>
           <Route path="/" element={<HomePage />} />
