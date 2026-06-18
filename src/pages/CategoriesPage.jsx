@@ -13,6 +13,10 @@ import mlbbImg from '../assets/game-covers/mlbb.jpg'
 import pubgMobileImg from '../assets/game-covers/pubg-mobile.jpg'
 import freeFireImg from '../assets/game-covers/free-fire.jpg'
 import criticalOpsImg from '../assets/game-covers/critical-ops.jpg'
+import eFootballImg from '../assets/game-covers/efootball.jpg'
+import fcMobileImg from '../assets/game-covers/fc-mobile.jpg'
+import honorOfKingsImg from '../assets/game-covers/honor-of-kings.jpg'
+import riseOfKingdomsImg from '../assets/game-covers/rise-of-kingdoms.jpg'
 
 function CategoriesPage() {
   const navigate = useNavigate()
@@ -28,13 +32,17 @@ function CategoriesPage() {
   ]
 
   const mobileGames = [
-    { name: "Wild Rift", image: wildRiftImg, slug: "wild rift" },
-    { name: "Clash Royale", image: clashRoyaleImg, slug: "clash royale" },
-    { name: "Brawl Stars", image: brawlStarsImg, slug: "brawl stars" },
-    { name: "Mobile Legends", image: mlbbImg, slug: "mobile legends" },
     { name: "PUBG Mobile", image: pubgMobileImg, slug: "pubg mobile" },
+    { name: "Mobile Legends", image: mlbbImg, slug: "mobile legends" },
     { name: "Free Fire", image: freeFireImg, slug: "free fire" },
+    { name: "Brawl Stars", image: brawlStarsImg, slug: "brawl stars" },
+    { name: "Clash Royale", image: clashRoyaleImg, slug: "clash royale" },
+    { name: "Wild Rift", image: wildRiftImg, slug: "wild rift" },
+    { name: "Rise of Kingdoms", image: riseOfKingdomsImg, slug: "rise of kingdoms" },
+    { name: "Honor of Kings", image: honorOfKingsImg, slug: "honor of kings" },
     { name: "Critical Ops", image: criticalOpsImg, slug: "critical ops" },
+    { name: "eFootball", image: eFootballImg, slug: "efootball" },
+    { name: "FC Mobile", image: fcMobileImg, slug: "fc mobile" },
   ]
 
   const handleCategoryClick = (slug) => {
@@ -56,6 +64,7 @@ function CategoriesPage() {
       <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">Kategoriler</h1>
       <p className="text-sm text-gray-400 mb-6 md:mb-8">Oyun seç, ilanları keşfet</p>
 
+      {/* PC Oyunları */}
       <div className="mb-8 md:mb-10">
         <h2 className="text-lg md:text-xl font-semibold text-white mb-4 flex items-center gap-2">
           <svg className="w-5 h-5 text-[#38BDF8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -86,6 +95,7 @@ function CategoriesPage() {
         </div>
       </div>
 
+      {/* Mobil Oyunları */}
       <div>
         <h2 className="text-lg md:text-xl font-semibold text-white mb-4 flex items-center gap-2">
           <svg className="w-5 h-5 text-[#38BDF8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +112,7 @@ function CategoriesPage() {
             >
               <div className="aspect-square overflow-hidden">
                 <img
-                  src={game.image}
+                  src={game.image || 'https://via.placeholder.com/400x400/1E293B/22C55E?text=' + game.name}
                   alt={game.name}
                   className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
                 />

@@ -7,6 +7,10 @@ import CategoriesPage from './pages/CategoriesPage'
 import TermsPage from './pages/TermsPage'
 import ProfilePage from './pages/ProfilePage'
 import SearchPage from './pages/SearchPage'
+import MessagesPage from './pages/MessagesPage'
+import ChatPage from './pages/ChatPage'
+import SellerPanel from './pages/SellerPanel'
+import AddProduct from './pages/AddProduct'
 import AuthModal from './components/AuthModal'
 import DeviceDetector from './components/DeviceDetector'
 import { supabase } from './lib/supabaseClient'
@@ -21,17 +25,33 @@ function AppContent() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        fetchUserRole(session.user)
+      }
       setUser(session?.user ?? null)
       setLoading(false)
     })
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
       if (session?.user) {
+        fetchUserRole(session.user)
         showToast('success', `Hoş geldin, ${session.user.user_metadata?.full_name || session.user.email?.split('@')[0]}!`)
       }
+      setUser(session?.user ?? null)
     })
     return () => listener?.subscription.unsubscribe()
   }, [])
+
+  async function fetchUserRole(user) {
+    const { data } = await supabase
+      .from('users')
+      .select('role')
+      .eq('auth_id', user.id)
+      .single()
+    
+    if (data?.role) {
+      user.role = data.role
+    }
+  }
 
   useEffect(() => {
     const handleOpenSeller = () => {
@@ -83,6 +103,10 @@ function AppContent() {
         <Route path="/sozlesme" element={<TermsPage />} />
         <Route path="/profil" element={<ProfilePage onLogout={handleLogout} />} />
         <Route path="/arama" element={<SearchPage />} />
+        <Route path="/mesajlar" element={<MessagesPage />} />
+        <Route path="/chat/:userId/:productId" element={<ChatPage />} />
+        <Route path="/satıcı-panel" element={<SellerPanel />} />
+        <Route path="/ilan-ver" element={<AddProduct />} />
       </Routes>
       <AuthModal 
         isOpen={authOpen} 

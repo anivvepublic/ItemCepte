@@ -3,14 +3,15 @@ import { supabase } from '../lib/supabaseClient'
 import LiveTournament from './LiveTournament'
 
 const pcGames = [
-  "valorant", "cs2", "league of legends", "apex legends",
-  "overwatch 2", "rainbow six siege", "call of duty", "rust"
+  "VALORANT", "CS2", "League of Legends", "Apex Legends",
+  "Overwatch 2", "Rainbow Six Siege", "Call of Duty", "Rust"
 ]
 
 const mobileGames = [
-  "pubg mobile", "mobile legends", "call of duty mobile", "genshin impact", "free fire",
-  "brawl stars", "clash royale", "wild rift", "rise of kingdoms", "honor of kings",
-  "standoff 2", "critical ops"
+  "PUBG Mobile", "Mobile Legends", "Free Fire",
+  "Brawl Stars", "Clash Royale", "Wild Rift", "Rise of Kingdoms", "Honor of Kings",
+  "Critical Ops",
+  "eFootball", "FC Mobile"
 ]
 
 function CategorySidebar({ onSelectCategory }) {
@@ -20,7 +21,12 @@ function CategorySidebar({ onSelectCategory }) {
   const [activeIlanCount, setActiveIlanCount] = useState(0)
   const [loading, setLoading] = useState(true)
 
-  const fetchAllCounts = async () => {
+  useEffect(() => {
+    fetchAllCounts()
+    fetchActiveIlanCount()
+  }, [])
+
+  async function fetchAllCounts() {
     const counts = {}
     
     for (const game of pcGames) {
@@ -36,8 +42,8 @@ function CategorySidebar({ onSelectCategory }) {
       .from('products')
       .select('*', { count: 'exact', head: true })
       .eq('status', 'active')
-      .eq('category', 'steam/epic')
-    counts['steam/epic'] = steamCount || 0
+      .eq('category', 'Steam/Epic')
+    counts['Steam/Epic'] = steamCount || 0
 
     for (const game of mobileGames) {
       const { count, error } = await supabase
@@ -49,19 +55,16 @@ function CategorySidebar({ onSelectCategory }) {
     }
 
     setCategoryCounts(counts)
-    
-    const { count: totalCount } = await supabase
-      .from('products')
-      .select('*', { count: 'exact', head: true })
-      .eq('status', 'active')
-    setActiveIlanCount(totalCount || 0)
-    
     setLoading(false)
   }
 
-  useEffect(() => {
-    fetchAllCounts()
-  }, [])
+  async function fetchActiveIlanCount() {
+    const { count, error } = await supabase
+      .from('products')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'active')
+    if (!error) setActiveIlanCount(count || 0)
+  }
 
   const handleCategoryClick = (category) => {
     if (onSelectCategory) {
@@ -87,15 +90,10 @@ function CategorySidebar({ onSelectCategory }) {
 
   const visiblePcGames = pcGames.filter(game => (categoryCounts[game] || 0) > 0)
   const visibleMobileGames = mobileGames.filter(game => (categoryCounts[game] || 0) > 0)
-  const showSteam = (categoryCounts['steam/epic'] || 0) > 0
+  const showSteam = (categoryCounts['Steam/Epic'] || 0) > 0
 
-  const pcTotal = visiblePcGames.reduce((sum, game) => sum + (categoryCounts[game] || 0), 0) + (showSteam ? (categoryCounts['steam/epic'] || 0) : 0)
+  const pcTotal = visiblePcGames.reduce((sum, game) => sum + (categoryCounts[game] || 0), 0) + (showSteam ? (categoryCounts['Steam/Epic'] || 0) : 0)
   const mobileTotal = visibleMobileGames.reduce((sum, game) => sum + (categoryCounts[game] || 0), 0)
-
-  // Görünen isimler (büyük harfle başlayan)
-  const displayName = (name) => {
-    return name.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
-  }
 
   return (
     <div className="space-y-4">
@@ -132,7 +130,7 @@ function CategorySidebar({ onSelectCategory }) {
                     onClick={() => handleCategoryClick(game)}
                     className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#1E293B] cursor-pointer transition text-sm"
                   >
-                    <span className="text-gray-300 hover:text-white">{displayName(game)}</span>
+                    <span className="text-gray-300 hover:text-white">{game}</span>
                     <span className="text-xs text-[#22C55E] bg-[#22C55E]/10 px-1.5 py-0.5 rounded-full">
                       {categoryCounts[game] || 0}
                     </span>
@@ -140,12 +138,12 @@ function CategorySidebar({ onSelectCategory }) {
                 ))}
                 {showSteam && (
                   <div
-                    onClick={() => handleCategoryClick('steam/epic')}
+                    onClick={() => handleCategoryClick('Steam/Epic')}
                     className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#1E293B] cursor-pointer transition text-sm"
                   >
                     <span className="text-gray-300 hover:text-white">Steam / Epic Hesapları</span>
                     <span className="text-xs text-[#22C55E] bg-[#22C55E]/10 px-1.5 py-0.5 rounded-full">
-                      {categoryCounts['steam/epic'] || 0}
+                      {categoryCounts['Steam/Epic'] || 0}
                     </span>
                   </div>
                 )}
@@ -177,7 +175,7 @@ function CategorySidebar({ onSelectCategory }) {
                     onClick={() => handleCategoryClick(game)}
                     className="flex items-center justify-between p-1.5 rounded-lg hover:bg-[#1E293B] cursor-pointer transition text-sm"
                   >
-                    <span className="text-gray-300 hover:text-white">{displayName(game)}</span>
+                    <span className="text-gray-300 hover:text-white">{game}</span>
                     <span className="text-xs text-[#22C55E] bg-[#22C55E]/10 px-1.5 py-0.5 rounded-full">
                       {categoryCounts[game] || 0}
                     </span>

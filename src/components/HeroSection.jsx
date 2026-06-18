@@ -41,7 +41,8 @@ function HeroSection() {
           </h1>
           
           <p className="text-sm md:text-lg text-[#94A3B8] mb-6 md:mb-8 max-w-2xl mx-auto px-2">
-            Binlerce ürün, anında teslimat ve %100 güvenli ödeme sistemi.
+            Binlerce ürün, anında teslimat ve %100 güvenli ödeme sistemi. 
+            <br className="hidden sm:block" />
             Şimdi katıl, fırsatları kaçırma!
           </p>
           

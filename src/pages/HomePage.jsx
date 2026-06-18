@@ -10,6 +10,7 @@ function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [categoryLoading, setCategoryLoading] = useState(false)
 
+  // URL'den kategori parametresini oku
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const category = params.get('category')
@@ -62,15 +63,19 @@ function HomePage() {
 
   async function fetchProductsByCategory(category) {
     setCategoryLoading(true)
+    // ilike ile büyük/küçük harf duyarsız arama
     const { data, error } = await supabase
       .from('products')
       .select('*')
       .eq('status', 'active')
-      .eq('category', category.toLowerCase())
+      .ilike('category', category)
       .order('created_at', { ascending: false })
 
-    if (!error && data) setFilteredProducts(data)
-    else setFilteredProducts([])
+    if (!error && data) {
+      setFilteredProducts(data)
+    } else {
+      setFilteredProducts([])
+    }
     setCategoryLoading(false)
   }
 

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
+import NotificationBell from './NotificationBell'
 
 function Navbar({ user, onAuthClick, onLogout }) {
   const navigate = useNavigate()
@@ -11,22 +12,28 @@ function Navbar({ user, onAuthClick, onLogout }) {
   const [balance, setBalance] = useState(0)
   const [avatarUrl, setAvatarUrl] = useState(null)
   const [userName, setUserName] = useState('')
+  const [isSeller, setIsSeller] = useState(false)
   const searchRef = useRef(null)
   const profileRef = useRef(null)
   const debounceTimer = useRef(null)
 
-  const scrollToTop = () => {
+  const handleLogoClick = () => {
+    navigate('/')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const handleLogoClick = () => {
-    navigate('/')
-    scrollToTop()
+  // Toast gösterimi
+  const showToast = (message, type = 'info') => {
+    // App.jsx'deki toast sistemini kullan
+    window.dispatchEvent(new CustomEvent('showToast', { 
+      detail: { message, type } 
+    }))
   }
 
   useEffect(() => {
     if (user) {
       fetchUserData()
+      checkSellerStatus()
       const channel = supabase
         .channel('profile-changes')
         .on(
@@ -42,6 +49,7 @@ function Navbar({ user, onAuthClick, onLogout }) {
               setAvatarUrl(payload.new.avatar_url || null)
               setUserName(payload.new.full_name || user.email?.split('@')[0] || 'Kullanıcı')
               if (payload.new.balance !== undefined) setBalance(payload.new.balance || 0)
+              if (payload.new.role !== undefined) setIsSeller(payload.new.role === 'seller')
             }
           }
         )
@@ -67,10 +75,23 @@ function Navbar({ user, onAuthClick, onLogout }) {
     }
   }
 
+  async function checkSellerStatus() {
+    if (!user) return
+    const { data, error } = await supabase
+      .from('users')
+      .select('role')
+      .eq('auth_id', user.id)
+      .single()
+    if (!error && data) {
+      setIsSeller(data.role === 'seller')
+    }
+  }
+
   useEffect(() => {
     const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
         if (session?.user) fetchUserData()
+        if (session?.user) checkSellerStatus()
       }
     })
     return () => listener?.subscription.unsubscribe()
@@ -173,6 +194,24 @@ function Navbar({ user, onAuthClick, onLogout }) {
     return 'U'
   }
 
+  // Buton tıklama işlemi
+  const handleSellerAction = (target, actionName) => {
+    if (!user) {
+      // Giriş yapmamış → bu durum zaten buton gözükmediği için olmaz ama yine de
+      showToast('Lütfen önce giriş yapın.', 'warning')
+      onAuthClick()
+      return
+    }
+
+    if (!isSeller) {
+      showToast('Satıcı olmak için başvuru yapmanız gerekiyor.', 'info')
+      window.dispatchEvent(new CustomEvent('openSellerApplication'))
+      return
+    }
+
+    navigate(target)
+  }
+
   return (
     <nav className="glass fixed top-0 left-0 right-0 z-50 px-3 py-2 md:px-6 md:py-3">
       <div className="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-2">
@@ -244,8 +283,36 @@ function Navbar({ user, onAuthClick, onLogout }) {
             <span className="sm:hidden">K</span>
           </Link>
 
+          {/* SADECE GİRİŞ YAPMIŞ KULLANICIYA GÖSTER */}
+          {user && (
+            <>
+              <button
+                onClick={() => handleSellerAction('/satıcı-panel', 'İlanlarım')}
+                className="bg-[#1E293B] hover:bg-[#334155] text-white px-2 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm transition flex items-center gap-1"
+              >
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-[#38BDF8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <span className="hidden sm:inline">İlanlarım</span>
+                <span className="sm:hidden">İlan</span>
+              </button>
+
+              <button
+                onClick={() => handleSellerAction('/ilan-ver', 'İlan Ver')}
+                className="bg-[#22C55E] hover:bg-[#16A34A] text-white px-2 py-1 md:px-4 md:py-1.5 rounded-full text-xs md:text-sm transition flex items-center gap-1"
+              >
+                <svg className="w-4 h-4 md:w-5 md:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span className="hidden sm:inline">İlan Ver</span>
+                <span className="sm:hidden">+</span>
+              </button>
+            </>
+          )}
+
           {user ? (
             <>
+              <NotificationBell userId={user.id} />
               <button
                 onClick={() => setShowProfileMenu(!showProfileMenu)}
                 className="flex items-center gap-1 md:gap-2 bg-[#1E293B] hover:bg-[#334155] rounded-full px-1.5 py-1 md:px-3 md:py-1.5 transition"

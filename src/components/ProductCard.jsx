@@ -1,85 +1,97 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+// SADECE ITEMCEPTE İLANLARINDA KULLANILACAK KATEGORİ FOTOĞRAFLARI
 const categoryImages = {
-  "valorant": "https://www.freetogame.com/g/valorant/background.jpg",
-  "cs2": "https://www.freetogame.com/g/cs2/background.jpg",
-  "league of legends": "https://www.freetogame.com/g/league-of-legends/background.jpg",
-  "apex legends": "https://www.freetogame.com/g/apex-legends/background.jpg",
-  "overwatch 2": "https://www.freetogame.com/g/overwatch-2/background.jpg",
-  "rainbow six siege": "https://www.freetogame.com/g/rainbow-six-siege/background.jpg",
-  "call of duty": "https://www.freetogame.com/g/call-of-duty-hq/background.jpg",
-  "rust": "https://www.freetogame.com/g/rust/background.jpg",
-  "steam/epic": "https://cdn.cloudflare.steamstatic.com/steam/apps/221100/header.jpg",
-  "pubg mobile": "https://www.pubgmobile.com/static/images/index/bg/bg.jpg",
-  "mobile legends": "https://cdn2.unrealengine.com/mobile-legends-1920x1080-05c5c5c5c5c5.jpg",
-  "call of duty mobile": "https://www.callofduty.com/content/dam/atvi/callofduty/cod-touchui/blog/hero/mw/CODM_S5_BP_Hero.jpg",
-  "genshin impact": "https://upload-os-bbs.mihoyo.com/upload/2021/09/28/124142432.png",
-  "free fire": "https://images.garena.com/image/2024/01/free-fire-cover.jpg",
-  "brawl stars": "https://cdn.supercell.com/images/brawlstars/brawl-stars-cover.jpg",
-  "clash royale": "https://cdn.supercell.com/images/clashroyale/cr-cover.jpg",
-  "wild rift": "https://images.contentstack.io/v3/assets/blt370b3f3f6e5e5e5e/blt3f2f7d9d2e5c5c5e/wild-rift-cover.jpg",
-  "rise of kingdoms": "https://cdn2.unrealengine.com/rise-of-kingdoms-cover.jpg",
-  "honor of kings": "https://cdn2.unrealengine.com/honor-of-kings-cover.jpg",
-  "standoff 2": "https://standoff2.com/static/images/standoff2-cover.jpg",
-  "critical ops": "https://www.criticalopsgame.com/images/co-cover.jpg",
+  'valorant': '/images/valorant-cover.jpg',
+  'cs2': '/images/cs2-cover.jpg',
+  'steam': '/images/steam-cover.jpg',
+  'epic games': '/images/epic-cover.jpg',
+  'steam/epic': '/images/steam-cover.jpg',
+  'rust': '/images/rust-cover.jpg',
+  'pubg mobile': '/images/pubg-cover.jpg',
+  'brawl stars': '/images/brawl-cover.jpg',
+  'league of legends': '/images/lol-cover.jpg',
+  'lol': '/images/lol-cover.jpg',
 }
 
-function ProductCard({ id, title, price, image_url, rating = 4.5, verified = true, category }) {
+function ProductCard({ 
+  id, 
+  title, 
+  price, 
+  image_url, 
+  category, 
+  seller_name = 'ItemCepte', 
+  seller_avatar = null,
+  isItemCepte = false
+}) {
   const [imgError, setImgError] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
   const navigate = useNavigate()
-  
-  const categoryKey = category?.toLowerCase() || ""
-  const fallbackImage = "https://www.freetogame.com/assets/images/freetogame-logo.png"
-  const displayImage = image_url || (categoryImages[categoryKey] || fallbackImage)
+
+  const fallbackImage = "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&h=300&fit=crop"
+
+  let displayImage = fallbackImage
+
+  if (image_url) {
+    displayImage = image_url
+  } else if (isItemCepte && category) {
+    const categoryKey = category.toLowerCase()
+    displayImage = categoryImages[categoryKey] || fallbackImage
+  }
 
   const handleClick = () => navigate(`/product/${id}`)
 
   return (
     <div
       onClick={handleClick}
-      className="group relative bg-[#1E293B] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_0_25px_rgba(34,197,94,0.25)] border border-[#334155] hover:border-[#22C55E] active:scale-[0.98]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group relative bg-[#111827] rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border border-[#1F2937] hover:border-[#22C55E] hover:shadow-[0_0_30px_rgba(34,197,94,0.1)] hover:-translate-y-1 active:scale-[0.98]"
     >
-      <div className="aspect-square overflow-hidden">
+      {/* Kapak Fotoğrafı - İLK HALİ object-cover */}
+      <div className="aspect-[4/3] overflow-hidden bg-[#0F172A]">
         <img
           src={imgError ? fallbackImage : displayImage}
           alt={title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           onError={() => setImgError(true)}
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#111827] via-[#111827]/30 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300 pointer-events-none"></div>
       </div>
 
-      {price < 500 && (
-        <div className="absolute top-2 right-2 bg-[#22C55E] text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-lg">
-          Fırsat
-        </div>
-      )}
-
-      <div className="p-2 md:p-3">
-        <h3 className="font-semibold text-white text-xs sm:text-sm truncate">{title || "Premium Hesap"}</h3>
-        <div className="flex items-center gap-1 mt-0.5">
-          <div className="flex text-[#FBBF24] text-[10px] md:text-xs">
-            {'★'.repeat(Math.floor(rating))}{'☆'.repeat(5 - Math.floor(rating))}
+      <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-[#111827] via-[#111827]/95 to-transparent">
+        <div className="flex items-center gap-2 mb-1.5">
+          <div className="w-5 h-5 rounded-full bg-gradient-to-r from-[#22C55E] to-[#38BDF8] flex items-center justify-center text-[8px] font-bold text-white overflow-hidden flex-shrink-0 border border-[#1F2937]">
+            {seller_avatar ? (
+              <img src={seller_avatar} alt={seller_name} className="w-full h-full object-cover" />
+            ) : (
+              (seller_name || 'U').charAt(0).toUpperCase()
+            )}
           </div>
-          <span className="text-[10px] text-gray-400">{rating}</span>
-        </div>
-
-        <div className="flex items-center gap-1 mt-0.5">
-          <span className="text-[10px] text-gray-500">ItemCepte</span>
-          {verified && (
-            <span className="text-[#22C55E] text-[10px] flex items-center gap-0.5">
-              <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              Doğr.
+          <span className="text-[10px] text-gray-300 truncate">{seller_name}</span>
+          {isItemCepte && (
+            <span className="text-[8px] text-[#A855F7] bg-[#A855F7]/15 px-1.5 py-0.5 rounded-full border border-[#A855F7]/20">
+              ItemCepte
             </span>
           )}
         </div>
 
-        <div className="flex items-center justify-between mt-1 md:mt-2">
-          <span className="text-[#22C55E] font-bold text-sm md:text-base">{price} TL</span>
+        {category && (
+          <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-[#38BDF8]/30 bg-[#0F172A]/50 text-[9px] font-medium text-[#38BDF8] mb-1">
+            <span className="w-1 h-1 rounded-full bg-[#38BDF8]"></span>
+            {category}
+          </div>
+        )}
+
+        <h3 className="text-white font-semibold text-xs sm:text-sm truncate leading-tight">
+          {title || "Premium Hesap"}
+        </h3>
+
+        <div className="flex items-center justify-between mt-1.5">
+          <span className="text-[#22C55E] font-bold text-sm sm:text-base">{price} TL</span>
           <button
-            className="bg-[#22C55E] text-white text-[10px] md:text-xs px-2 py-1 md:px-3 md:py-1.5 rounded-full hover:bg-[#16A34A] transition active:scale-95"
+            className="bg-[#22C55E] hover:bg-[#16A34A] text-white text-[10px] sm:text-xs px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-lg transition-all duration-300 active:scale-95 shadow-lg shadow-[#22C55E]/20 opacity-70 group-hover:opacity-100"
             onClick={(e) => { e.stopPropagation(); navigate(`/product/${id}`) }}
           >
             Satın Al
