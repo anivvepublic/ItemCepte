@@ -7,8 +7,6 @@ import CategoriesPage from './pages/CategoriesPage'
 import TermsPage from './pages/TermsPage'
 import ProfilePage from './pages/ProfilePage'
 import SearchPage from './pages/SearchPage'
-import MessagesPage from './pages/MessagesPage'
-import ChatPage from './pages/ChatPage'
 import SellerPanel from './pages/SellerPanel'
 import AddProduct from './pages/AddProduct'
 import AuthModal from './components/AuthModal'
@@ -53,6 +51,16 @@ function AppContent() {
     }
   }
 
+  // Toast event listener
+  useEffect(() => {
+    const handleToast = (event) => {
+      const { message, type } = event.detail
+      showToast(type, message)
+    }
+    window.addEventListener('showToast', handleToast)
+    return () => window.removeEventListener('showToast', handleToast)
+  }, [])
+
   useEffect(() => {
     const handleOpenSeller = () => {
       setAuthMode('seller')
@@ -95,6 +103,7 @@ function AppContent() {
 
   return (
     <>
+      <DeviceDetector />
       <Navbar user={user} onAuthClick={() => openAuth('login')} onLogout={handleLogout} />
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -103,8 +112,6 @@ function AppContent() {
         <Route path="/sozlesme" element={<TermsPage />} />
         <Route path="/profil" element={<ProfilePage onLogout={handleLogout} />} />
         <Route path="/arama" element={<SearchPage />} />
-        <Route path="/mesajlar" element={<MessagesPage />} />
-        <Route path="/chat/:userId/:productId" element={<ChatPage />} />
         <Route path="/satıcı-panel" element={<SellerPanel />} />
         <Route path="/ilan-ver" element={<AddProduct />} />
       </Routes>
@@ -130,7 +137,6 @@ function App() {
   return (
     <BrowserRouter>
       <div className="min-h-screen bg-[#0F172A]">
-        <DeviceDetector />
         <AppContent />
       </div>
     </BrowserRouter>

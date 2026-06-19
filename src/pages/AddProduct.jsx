@@ -2,9 +2,34 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 
+// TÜM KATEGORİLER (küçük harf, alfabetik sırada)
 const categories = [
-  'VALORANT', 'CS2', 'Steam', 'Epic Games', 'Steam/Epic',
-  'Rust', 'PUBG Mobile', 'Brawl Stars', 'League of Legends'
+  'apex legends',
+  'brawl stars',
+  'call of duty',
+  'call of duty mobile',
+  'clash royale',
+  'critical ops',
+  'cs2',
+  'efootball',
+  'epic games',
+  'fc mobile',
+  'free fire',
+  'genshin impact',
+  'honor of kings',
+  'league of legends',
+  'metin2',
+  'mobile legends',
+  'overwatch 2',
+  'pubg mobile',
+  'rainbow six siege',
+  'rise of kingdoms',
+  'rust',
+  'standoff 2',
+  'steam',
+  'steam/epic',
+  'valorant',
+  'wild rift'
 ]
 
 function AddProduct() {
@@ -132,6 +157,7 @@ function AddProduct() {
 
     setUploadProgress(80)
 
+    // seller_id: user.id (auth.users'daki id)
     const { error: insertError } = await supabase
       .from('products')
       .insert({
@@ -140,7 +166,7 @@ function AddProduct() {
         price: parseFloat(formData.price),
         description: formData.description.trim(),
         status: formData.status,
-        seller_id: user.id,
+        seller_id: user.id,  // BURASI ÇOK ÖNEMLİ
         image_url: imageUrl
       })
 
@@ -155,6 +181,10 @@ function AddProduct() {
     setTimeout(() => {
       navigate('/satıcı-panel')
     }, 500)
+  }
+
+  const displayCategory = (cat) => {
+    return cat.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
   }
 
   if (loading) {
@@ -176,7 +206,7 @@ function AddProduct() {
           <p className="text-gray-400 text-sm mb-4">İlan eklemek için satıcı hesabına sahip olmalısınız.</p>
           <button
             onClick={() => window.dispatchEvent(new CustomEvent('openSellerApplication'))}
-            className="text-[#22C55E] hover:text-[#16A34A] transition text-sm flex items-center justify-center gap-1"
+            className="text-[#38BDF8] hover:text-[#22C55E] transition text-sm flex items-center justify-center gap-1"
           >
             Satıcı olmak için başvur
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -240,7 +270,7 @@ function AddProduct() {
                 className="w-full bg-[#0F172A] border border-[#334155] rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#22C55E] transition"
               >
                 {categories.map((cat) => (
-                  <option key={cat} value={cat}>{cat}</option>
+                  <option key={cat} value={cat}>{displayCategory(cat)}</option>
                 ))}
               </select>
             </div>

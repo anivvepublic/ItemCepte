@@ -10,12 +10,11 @@ function HomePage() {
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [categoryLoading, setCategoryLoading] = useState(false)
 
-  // URL'den kategori parametresini oku
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const category = params.get('category')
     if (category) {
-      setSelectedCategory(category)
+      setSelectedCategory(category.toLowerCase().trim())
     }
   }, [])
 
@@ -33,7 +32,7 @@ function HomePage() {
 
   useEffect(() => {
     const handleCategorySearch = (event) => {
-      setSelectedCategory(event.detail)
+      setSelectedCategory(event.detail.toLowerCase().trim())
       setTimeout(() => {
         const productsSection = document.getElementById('products-section')
         if (productsSection) {
@@ -63,12 +62,13 @@ function HomePage() {
 
   async function fetchProductsByCategory(category) {
     setCategoryLoading(true)
-    // ilike ile büyük/küçük harf duyarsız arama
+    // BİREBİR EŞLEŞME - küçük harf, boşluk yok
+    const cleanCategory = category.toLowerCase().trim()
     const { data, error } = await supabase
       .from('products')
       .select('*')
       .eq('status', 'active')
-      .ilike('category', category)
+      .eq('category', cleanCategory)
       .order('created_at', { ascending: false })
 
     if (!error && data) {
@@ -87,7 +87,7 @@ function HomePage() {
           <div className="col-span-1" id="products-section">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
               <h2 className="text-lg md:text-xl font-bold text-white border-l-4 border-[#38BDF8] pl-3">
-                {selectedCategory ? `${selectedCategory} İlanları` : "Öne Çıkan İlanlar"}
+                {selectedCategory ? `${selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)} İlanları` : "Öne Çıkan İlanlar"}
               </h2>
               {selectedCategory && (
                 <button

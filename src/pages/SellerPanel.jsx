@@ -3,17 +3,82 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabaseClient'
 import ProductCardSeller from '../components/ProductCardSeller'
 
+// Tüm kategoriler
+const allCategories = [
+  'valorant', 'cs2', 'rust', 'league of legends', 'metin2',
+  'apex legends', 'steam/epic', 'pubg mobile', 'mobile legends',
+  'free fire', 'brawl stars', 'clash royale', 'wild rift',
+  'rise of kingdoms', 'honor of kings', 'critical ops',
+  'efootball', 'fc mobile', 'call of duty', 'overwatch 2',
+  'rainbow six siege', 'genshin impact', 'standoff 2'
+]
+
 function SellerPanel() {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [products, setProducts] = useState([])
+  const [filteredProducts, setFilteredProducts] = useState([])
   const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState({ total: 0, active: 0, sold: 0 })
+  const [searchTerm, setSearchTerm] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [statusFilter, setStatusFilter] = useState('')
+  const [sortBy, setSortBy] = useState('newest')
+  const [stats, setStats] = useState({ total: 0, active: 0, sold: 0, weekly: 0 })
+  const [toast, setToast] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
     checkUser()
   }, [])
+
+  // Filtreleme ve sıralama
+  useEffect(() => {
+    let filtered = [...products]
+
+    // Kategori filtresi
+    if (categoryFilter) {
+      filtered = filtered.filter(p => p.category === categoryFilter)
+    }
+
+    // Durum filtresi
+    if (statusFilter) {
+      filtered = filtered.filter(p => p.status === statusFilter)
+    }
+
+    // Arama - BAŞLIK ve AÇIKLAMA'da ara
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase().trim()
+      filtered = filtered.filter(p => 
+        p.title?.toLowerCase().includes(term) ||
+        p.description?.toLowerCase().includes(term)
+      )
+    }
+
+    // Sıralama
+    switch (sortBy) {
+      case 'newest':
+        filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        break
+      case 'oldest':
+        filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+        break
+      case 'price_high':
+        filtered.sort((a, b) => b.price - a.price)
+        break
+      case 'price_low':
+        filtered.sort((a, b) => a.price - b.price)
+        break
+      default:
+        break
+    }
+
+    setFilteredProducts(filtered)
+  }, [products, categoryFilter, statusFilter, searchTerm, sortBy])
+
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type })
+    setTimeout(() => setToast(null), 3000)
+  }
 
   async function checkUser() {
     const { data: { user: currentUser } } = await supabase.auth.getUser()
@@ -29,14 +94,13 @@ function SellerPanel() {
       .single()
 
     if (!profileData || profileData.role !== 'seller') {
-      // Satıcı değilse yönlendir
       navigate('/')
       return
     }
 
     setUser(currentUser)
     setProfile(profileData)
-    await fetchProducts(profileData.id)
+    await fetchProducts(currentUser.id)
     setLoading(false)
   }
 
@@ -49,10 +113,20 @@ function SellerPanel() {
 
     if (!error && data) {
       setProducts(data)
+      setFilteredProducts(data)
+
+      // İstatistikler
       const total = data.length
       const active = data.filter(p => p.status === 'active').length
       const sold = data.filter(p => p.status === 'sold').length
-      setStats({ total, active, sold })
+      
+      // Bu hafta eklenenler
+      const now = new Date()
+      const weekAgo = new Date(now)
+      weekAgo.setDate(now.getDate() - 7)
+      const weekly = data.filter(p => new Date(p.created_at) > weekAgo).length
+
+      setStats({ total, active, sold, weekly })
     }
   }
 
@@ -65,10 +139,7 @@ function SellerPanel() {
 
       if (!error) {
         setProducts(products.filter(p => p.id !== productId))
-        const newTotal = products.length - 1
-        const newActive = products.filter(p => p.id !== productId && p.status === 'active').length
-        const newSold = products.filter(p => p.id !== productId && p.status === 'sold').length
-        setStats({ total: newTotal, active: newActive, sold: newSold })
+        showToast('İlan başarıyla silindi!', 'success')
       }
     }
   }
@@ -81,11 +152,40 @@ function SellerPanel() {
 
     if (!error) {
       setProducts(products.map(p => p.id === productId ? { ...p, status: newStatus } : p))
-      const total = products.length
-      const active = products.filter(p => p.id === productId ? newStatus === 'active' : p.status === 'active').length
-      const sold = products.filter(p => p.id === productId ? newStatus === 'sold' : p.status === 'sold').length
-      setStats({ total, active, sold })
+      showToast('İlan durumu güncellendi!', 'success')
     }
+  }
+
+  const handleCopyProduct = async (product) => {
+    const { data, error } = await supabase
+      .from('products')
+      .insert({
+        title: product.title + ' (Kopya)',
+        category: product.category,
+        price: product.price,
+        description: product.description || '',
+        status: 'active',
+        seller_id: user.id,
+        image_url: product.image_url
+      })
+      .select()
+
+    if (!error && data) {
+      setProducts([...products, data[0]])
+      showToast('İlan kopyalandı!', 'success')
+    }
+  }
+
+  const displayCategory = (cat) => {
+    if (!cat) return ''
+    return cat.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')
+  }
+
+  const clearFilters = () => {
+    setCategoryFilter('')
+    setStatusFilter('')
+    setSearchTerm('')
+    setSortBy('newest')
   }
 
   if (loading) {
@@ -122,6 +222,17 @@ function SellerPanel() {
   return (
     <div className="min-h-screen bg-[#0F172A] pt-20 md:pt-24 pb-10">
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+        {/* Toast */}
+        {toast && (
+          <div className={`fixed top-24 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-xl shadow-2xl text-sm font-semibold transition-all duration-300 ${
+            toast.type === 'success' ? 'bg-[#22C55E] text-white' :
+            toast.type === 'error' ? 'bg-[#EF4444] text-white' :
+            'bg-[#38BDF8] text-black'
+          }`}>
+            {toast.message}
+          </div>
+        )}
+
         {/* Başlık */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
           <div>
@@ -139,8 +250,8 @@ function SellerPanel() {
           </Link>
         </div>
 
-        {/* İstatistik Kartları */}
-        <div className="grid grid-cols-3 gap-3 md:gap-4 mb-6">
+        {/* İstatistikler */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 mb-6">
           <div className="glass-card p-3 md:p-4 text-center border border-[#334155] hover:border-[#22C55E] transition">
             <p className="text-2xl md:text-3xl font-bold text-white">{stats.total}</p>
             <p className="text-[10px] md:text-xs text-gray-400">Toplam İlan</p>
@@ -153,27 +264,100 @@ function SellerPanel() {
             <p className="text-2xl md:text-3xl font-bold text-[#FBBF24]">{stats.sold}</p>
             <p className="text-[10px] md:text-xs text-gray-400">Satıldı</p>
           </div>
+          <div className="glass-card p-3 md:p-4 text-center border border-[#334155] hover:border-[#A855F7] transition">
+            <p className="text-2xl md:text-3xl font-bold text-[#A855F7]">{stats.weekly}</p>
+            <p className="text-[10px] md:text-xs text-gray-400">Bu Hafta</p>
+          </div>
+        </div>
+
+        {/* Filtreler */}
+        <div className="glass-card p-4 border border-[#334155] mb-6">
+          <div className="flex flex-col md:flex-row gap-3">
+            {/* Arama - ÇALIŞIYOR */}
+            <div className="flex-1">
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="İlan başlığı veya açıklamasında ara..."
+                className="w-full bg-[#0F172A] border border-[#334155] rounded-lg px-4 py-2 text-white placeholder:text-[#6B7280] focus:outline-none focus:border-[#22C55E] transition"
+              />
+            </div>
+
+            {/* Kategori */}
+            <div className="w-full md:w-48">
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full bg-[#0F172A] border border-[#334155] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#22C55E] transition"
+              >
+                <option value="">Tüm Kategoriler</option>
+                {allCategories.map((cat) => (
+                  <option key={cat} value={cat}>{displayCategory(cat)}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Durum */}
+            <div className="w-full md:w-40">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full bg-[#0F172A] border border-[#334155] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#22C55E] transition"
+              >
+                <option value="">Tüm Durumlar</option>
+                <option value="active">Aktif</option>
+                <option value="sold">Satıldı</option>
+                <option value="deleted">Silindi</option>
+              </select>
+            </div>
+
+            {/* Sıralama */}
+            <div className="w-full md:w-40">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="w-full bg-[#0F172A] border border-[#334155] rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#22C55E] transition"
+              >
+                <option value="newest">En Yeni</option>
+                <option value="oldest">En Eski</option>
+                <option value="price_high">Fiyat: Yüksek</option>
+                <option value="price_low">Fiyat: Düşük</option>
+              </select>
+            </div>
+
+            {/* Temizle */}
+            <button
+              onClick={clearFilters}
+              className="px-4 py-2 bg-[#334155] hover:bg-[#475569] text-white rounded-lg text-sm transition whitespace-nowrap"
+            >
+              Temizle
+            </button>
+          </div>
         </div>
 
         {/* İlan Listesi */}
-        {products.length === 0 ? (
+        {filteredProducts.length === 0 ? (
           <div className="glass-card p-8 md:p-12 text-center border border-[#334155]">
             <svg className="w-12 h-12 md:w-16 md:h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
-            <p className="text-gray-400 text-sm md:text-base">Henüz ilanın yok.</p>
+            <p className="text-gray-400 text-sm md:text-base">
+              {searchTerm || categoryFilter || statusFilter ? 'Filtrelere uygun ilan bulunamadı.' : 'Henüz ilanın yok.'}
+            </p>
             <Link to="/ilan-ver" className="text-[#22C55E] text-sm hover:underline mt-2 inline-block">
-              İlk ilanını ekle!
+              {searchTerm || categoryFilter || statusFilter ? 'Filtreleri temizle' : 'İlk ilanını ekle!'}
             </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <ProductCardSeller
                 key={product.id}
                 product={product}
                 onDelete={handleDelete}
                 onStatusChange={handleStatusChange}
+                onCopy={handleCopyProduct}
               />
             ))}
           </div>
