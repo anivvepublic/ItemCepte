@@ -220,10 +220,10 @@ function ProfilePage({ onLogout }) {
 
   if (!user || !profile) {
     return (
-      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0F172A] flex items-center justify-center px-4">
         <div className="text-center">
-          <p className="text-gray-400 text-sm md:text-base">Profil bulunamadı. Lütfen giriş yapın.</p>
-          <button onClick={() => navigate('/')} className="btn-primary-glow mt-4 text-sm md:text-base">
+          <p className="text-gray-400 text-xs sm:text-sm md:text-base">Profil bulunamadı. Lütfen giriş yapın.</p>
+          <button onClick={() => navigate('/')} className="btn-primary-glow mt-4 text-xs sm:text-sm md:text-base">
             Ana Sayfaya Dön
           </button>
         </div>
@@ -232,10 +232,10 @@ function ProfilePage({ onLogout }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F172A] pt-20 md:pt-24 pb-10">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#0F172A] pt-20 md:pt-24 pb-10 px-2 sm:px-3 md:px-4">
+      <div className="max-w-7xl mx-auto">
         {/* Üst Profil Alanı */}
-        <div className="relative flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 mb-6 md:mb-8">
+        <div className="relative flex flex-col md:flex-row items-center md:items-start gap-3 md:gap-6 mb-6 md:mb-8">
           <AvatarUpload 
             userId={user.id}
             currentPhoto={profile.avatar_url}
@@ -243,21 +243,21 @@ function ProfilePage({ onLogout }) {
           />
 
           <div className="flex-1 text-center md:text-left">
-            <h1 className="text-2xl md:text-4xl font-bold text-white">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white">
               {profile.username || 'kullanici'}
             </h1>
-            <p className="text-base md:text-lg text-gray-400">{profile.full_name || 'İsimsiz Kullanıcı'}</p>
+            <p className="text-sm md:text-base lg:text-lg text-gray-400">{profile.full_name || 'İsimsiz Kullanıcı'}</p>
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mt-2">
               {profile.role === 'seller' && (
-                <span className="bg-[#22C55E]/20 text-[#22C55E] text-[10px] md:text-xs px-2 py-0.5 md:px-3 md:py-1 rounded-full">Satıcı</span>
+                <span className="bg-[#22C55E]/20 text-[#22C55E] text-[10px] sm:text-xs md:text-sm px-2 py-0.5 md:px-3 md:py-1 rounded-full">Satıcı</span>
               )}
               {profile.role === 'buyer' && (
-                <span className="bg-[#38BDF8]/20 text-[#38BDF8] text-[10px] md:text-xs px-2 py-0.5 md:px-3 md:py-1 rounded-full">Alıcı</span>
+                <span className="bg-[#38BDF8]/20 text-[#38BDF8] text-[10px] sm:text-xs md:text-sm px-2 py-0.5 md:px-3 md:py-1 rounded-full">Alıcı</span>
               )}
-              <span className="text-[10px] md:text-xs text-gray-500">{getMemberSince(profile.created_at)}</span>
+              <span className="text-[10px] sm:text-xs md:text-sm text-gray-500">{getMemberSince(profile.created_at)}</span>
             </div>
             {profile.bio && (
-              <p className="text-xs md:text-sm text-gray-400 mt-2 md:mt-3 max-w-lg">{profile.bio}</p>
+              <p className="text-xs sm:text-sm text-gray-400 mt-2 md:mt-3 max-w-lg">{profile.bio}</p>
             )}
           </div>
 
@@ -265,7 +265,7 @@ function ProfilePage({ onLogout }) {
             {profile.role !== 'seller' && (
               <button
                 onClick={openSellerApplication}
-                className="bg-[#FBBF24] hover:bg-[#F59E0B] text-black font-semibold px-4 py-2 md:px-5 md:py-2 rounded-full text-sm transition shadow-lg shadow-[#FBBF24]/20 w-full md:w-auto"
+                className="bg-[#FBBF24] hover:bg-[#F59E0B] text-black font-semibold px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm transition shadow-lg shadow-[#FBBF24]/20 w-full md:w-auto"
               >
                 Satıcı Ol
               </button>
@@ -273,16 +273,16 @@ function ProfilePage({ onLogout }) {
             
             <button 
               onClick={() => alert('Bakiye yükleme ekranı yakında!')}
-              className="glass-card px-3 py-2 md:px-4 md:py-2.5 flex items-center justify-center md:justify-start gap-2 hover:border-[#22C55E] transition group hover:shadow-[0_0_20px_rgba(34,197,94,0.15)] w-full md:w-auto"
+              className="glass-card px-3 py-2 md:px-4 md:py-2.5 flex items-center justify-center md:justify-start gap-2 hover:border-[#22C55E] transition group hover:shadow-[0_0_20px_rgba(34,197,94,0.1)]"
             >
-              <svg className="w-5 h-5 text-[#FBBF24]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg className="w-4 h-4 md:w-5 md:h-5 text-[#FBBF24]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c.5 0 1-.448 1-1v-3c0-.552-.5-1-1-1s-1 .448-1 1v3c0 .552.5 1 1 1z" />
               </svg>
-              <div>
+              <div className="hidden md:block">
                 <p className="text-xs text-gray-400">Bakiye</p>
-                <p className="text-base md:text-lg font-bold text-[#22C55E]">{balance} TL</p>
+                <p className="text-sm md:text-base font-bold text-[#22C55E]">{balance} TL</p>
               </div>
-              <svg className="w-4 h-4 text-gray-400 group-hover:text-white transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-gray-400 group-hover:text-white transition hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -301,7 +301,7 @@ function ProfilePage({ onLogout }) {
         <div className="mb-4 md:mb-6">
           {isSeller ? (
             <>
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-3 gap-2">
                 <h3 className="text-xs md:text-sm font-semibold text-white">İstatistikler</h3>
                 <label className="flex items-center gap-2 text-[10px] md:text-xs text-gray-400">
                   <input
@@ -321,19 +321,19 @@ function ProfilePage({ onLogout }) {
               />
             </>
           ) : (
-            <div className="glass-card p-8 md:p-12 text-center border border-[#334155]">
+            <div className="glass-card p-6 md:p-8 lg:p-12 text-center border border-[#334155] rounded-lg">
               <div className="flex flex-col items-center justify-center gap-4">
-                <svg className="w-12 h-12 md:w-16 md:h-16 text-[#38BDF8]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-10 h-10 md:w-12 md:h-12 lg:w-16 lg:h-16 text-[#38BDF8]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
                 <div>
-                  <p className="text-gray-400 text-sm md:text-base font-medium">İstatistikler Kilitli</p>
-                  <p className="text-gray-500 text-xs md:text-sm mt-1 max-w-md">
+                  <p className="text-gray-400 text-xs md:text-sm lg:text-base font-medium">İstatistikler Kilitli</p>
+                  <p className="text-gray-500 text-[10px] md:text-xs lg:text-sm mt-1 max-w-md">
                     İstatistiklere erişmek için satıcı hesabına sahip olmalısınız.
                   </p>
                   <button
                     onClick={openSellerApplication}
-                    className="mt-4 bg-[#FBBF24] hover:bg-[#F59E0B] text-black font-semibold px-4 py-2 rounded-full text-sm transition shadow-lg shadow-[#FBBF24]/20"
+                    className="mt-3 md:mt-4 bg-[#FBBF24] hover:bg-[#F59E0B] text-black font-semibold px-4 py-2 rounded-full text-xs md:text-sm transition shadow-lg shadow-[#FBBF24]/20"
                   >
                     Satıcı Ol
                   </button>
@@ -346,9 +346,9 @@ function ProfilePage({ onLogout }) {
         {/* Bilgi Kartları */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6">
           {/* Kişisel Bilgiler */}
-          <div className="glass-card p-3 md:p-4 hover:shadow-[0_0_25px_rgba(34,197,94,0.08)] transition border border-[#334155] hover:border-[#22C55E]/40">
+          <div className="glass-card p-3 md:p-4 hover:shadow-[0_0_25px_rgba(34,197,94,0.08)] transition border border-[#334155] hover:border-[#22C55E]/40 rounded-lg">
             <h3 className="text-[10px] md:text-xs font-semibold text-gray-400 mb-2 md:mb-3 flex items-center gap-2 uppercase tracking-wider">
-              <svg className="w-4 h-4 text-[#38BDF8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 md:w-4 md:h-4 text-[#38BDF8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               Kişisel Bilgiler
@@ -378,9 +378,9 @@ function ProfilePage({ onLogout }) {
           </div>
 
           {/* İletişim Bilgileri */}
-          <div className="glass-card p-3 md:p-4 hover:shadow-[0_0_25px_rgba(34,197,94,0.08)] transition border border-[#334155] hover:border-[#22C55E]/40">
+          <div className="glass-card p-3 md:p-4 hover:shadow-[0_0_25px_rgba(34,197,94,0.08)] transition border border-[#334155] hover:border-[#22C55E]/40 rounded-lg">
             <h3 className="text-[10px] md:text-xs font-semibold text-gray-400 mb-2 md:mb-3 flex items-center gap-2 uppercase tracking-wider">
-              <svg className="w-4 h-4 text-[#38BDF8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 md:w-4 md:h-4 text-[#38BDF8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
               İletişim
@@ -423,16 +423,16 @@ function ProfilePage({ onLogout }) {
 
         {/* İlanlarım ve Aktiviteler */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 md:gap-4">
-          <div className="glass-card p-3 md:p-4 hover:shadow-[0_0_25px_rgba(34,197,94,0.08)] transition border border-[#334155] hover:border-[#22C55E]/40">
+          <div className="glass-card p-3 md:p-4 hover:shadow-[0_0_25px_rgba(34,197,94,0.08)] transition border border-[#334155] hover:border-[#22C55E]/40 rounded-lg">
             <h3 className="text-[10px] md:text-xs font-semibold text-gray-400 mb-2 md:mb-3 flex items-center gap-2 uppercase tracking-wider">
-              <svg className="w-4 h-4 text-[#22C55E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+              <svg className="w-3 h-3 md:w-4 md:h-4 text-[#22C55E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V7a2 2 0 012-2h6a2 2 0 012 2v2M7 20h10a2 2 0 002-2v-6H5v6a2 2 0 002 2z" />
               </svg>
               İlanlarım
             </h3>
             {userProducts.length === 0 ? (
-              <div className="text-center py-4">
-                <p className="text-gray-400 text-xs md:text-sm">Henüz ilanın yok.</p>
+              <div className="text-center py-3 md:py-4">
+                <p className="text-gray-400 text-[10px] md:text-xs lg:text-sm">Henüz ilanın yok.</p>
                 {isSeller ? (
                   <button className="text-[#22C55E] text-[10px] md:text-xs hover:underline mt-1">İlk ilanını ekle!</button>
                 ) : (
@@ -448,7 +448,7 @@ function ProfilePage({ onLogout }) {
                     onClick={() => navigate(`/product/${product.id}`)}
                   >
                     <div className="aspect-square bg-[#1E293B] rounded-lg mb-1 flex items-center justify-center">
-                      <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 md:w-5 md:h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                       </svg>
                     </div>
@@ -460,16 +460,16 @@ function ProfilePage({ onLogout }) {
             )}
           </div>
 
-          <div className="glass-card p-3 md:p-4 hover:shadow-[0_0_25px_rgba(34,197,94,0.08)] transition border border-[#334155] hover:border-[#22C55E]/40">
+          <div className="glass-card p-3 md:p-4 hover:shadow-[0_0_25px_rgba(34,197,94,0.08)] transition border border-[#334155] hover:border-[#22C55E]/40 rounded-lg">
             <h3 className="text-[10px] md:text-xs font-semibold text-gray-400 mb-2 md:mb-3 flex items-center gap-2 uppercase tracking-wider">
-              <svg className="w-4 h-4 text-[#FBBF24]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3 md:w-4 md:h-4 text-[#FBBF24]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Son Aktiviteler
             </h3>
-            <div className="relative pl-6 border-l-2 border-[#334155] space-y-3 max-h-64 overflow-y-auto pr-2">
+            <div className="relative pl-4 md:pl-6 border-l-2 border-[#334155] space-y-2 md:space-y-3 max-h-64 overflow-y-auto pr-2">
               {activities.length === 0 ? (
-                <p className="text-gray-400 text-xs md:text-sm text-center py-4">Henüz aktivite yok</p>
+                <p className="text-gray-400 text-[10px] md:text-xs lg:text-sm text-center py-3 md:py-4">Henüz aktivite yok</p>
               ) : (
                 activities.slice(0, 6).map((activity, index) => (
                   <TimelineItem 
@@ -489,7 +489,7 @@ function ProfilePage({ onLogout }) {
         <div className="mt-6 md:mt-8 text-center">
           <button
             onClick={handleLogoutClick}
-            className="text-red-400 hover:text-red-300 text-xs md:text-sm transition border border-red-400/30 hover:border-red-400/60 px-4 py-1.5 md:px-6 md:py-2 rounded-full"
+            className="text-red-400 hover:text-red-300 text-xs md:text-sm transition border border-red-400/30 hover:border-red-400/60 px-3 md:px-6 py-1.5 md:py-2 rounded-full"
           >
             Çıkış Yap
           </button>
