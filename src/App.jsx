@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import HomePage from './pages/HomePage'
+import MobileHomePage from './pages/MobileHomePage'
+import MobileProfilePage from './pages/MobileProfilePage'
+import MobileAddProduct from './pages/MobileAddProduct'
+import MobileAuthPage from './pages/MobileAuthPage'
 import ProductDetail from './pages/ProductDetail'
 import CategoriesPage from './pages/CategoriesPage'
 import TermsPage from './pages/TermsPage'
@@ -20,6 +24,18 @@ function AppContent() {
   const [toast, setToast] = useState(null)
   const [loading, setLoading] = useState(true)
   const [authMode, setAuthMode] = useState('login')
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkDevice = () => {
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera
+      const isMobileDevice = /android|iphone|ipad|ipod|blackberry|windows phone|opera mini|iemobile/i.test(userAgent)
+      setIsMobile(isMobileDevice || window.innerWidth < 768)
+    }
+    checkDevice()
+    window.addEventListener('resize', checkDevice)
+    return () => window.removeEventListener('resize', checkDevice)
+  }, [])
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -51,7 +67,6 @@ function AppContent() {
     }
   }
 
-  // Toast event listener
   useEffect(() => {
     const handleToast = (event) => {
       const { message, type } = event.detail
@@ -101,28 +116,61 @@ function AppContent() {
     )
   }
 
+  // MOBİLDE OTURUM KONTROLÜ
+  if (isMobile && !user) {
+    return (
+      <div className="min-h-screen bg-[#0F172A]">
+        <DeviceDetector />
+        <MobileAuthPage onSuccess={handleAuthSuccess} />
+        {toast && (
+          <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-xl shadow-2xl text-xs font-medium transition-all duration-300 max-w-[90vw] text-center ${
+            toast.type === 'success' ? 'bg-[#22C55E] text-white' : 
+            toast.type === 'info' ? 'bg-[#38BDF8] text-black' : 'bg-red-500 text-white'
+          }`}>
+            {toast.message}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <>
       <DeviceDetector />
-      <Navbar user={user} onAuthClick={() => openAuth('login')} onLogout={handleLogout} />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/product/:id" element={<ProductDetail />} />
-        <Route path="/kategoriler" element={<CategoriesPage />} />
-        <Route path="/sozlesme" element={<TermsPage />} />
-        <Route path="/profil" element={<ProfilePage onLogout={handleLogout} />} />
-        <Route path="/arama" element={<SearchPage />} />
-        <Route path="/satıcı-panel" element={<SellerPanel />} />
-        <Route path="/ilan-ver" element={<AddProduct />} />
-      </Routes>
-      <AuthModal 
-        isOpen={authOpen} 
-        onClose={() => { setAuthOpen(false); setAuthMode('login') }} 
-        onSuccess={handleAuthSuccess}
-        initialMode={authMode}
-      />
+      {isMobile ? (
+        <Routes>
+          <Route path="/" element={<MobileHomePage />} />
+          <Route path="/profil" element={<MobileProfilePage onLogout={handleLogout} />} />
+          <Route path="/ilan-ver" element={<MobileAddProduct />} />
+          <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/kategoriler" element={<CategoriesPage />} />
+          <Route path="/sozlesme" element={<TermsPage />} />
+          <Route path="/arama" element={<SearchPage />} />
+          <Route path="/satıcı-panel" element={<SellerPanel />} />
+        </Routes>
+      ) : (
+        <>
+          <Navbar user={user} onAuthClick={() => openAuth('login')} onLogout={handleLogout} />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/kategoriler" element={<CategoriesPage />} />
+            <Route path="/sozlesme" element={<TermsPage />} />
+            <Route path="/profil" element={<ProfilePage onLogout={handleLogout} />} />
+            <Route path="/arama" element={<SearchPage />} />
+            <Route path="/satıcı-panel" element={<SellerPanel />} />
+            <Route path="/ilan-ver" element={<AddProduct />} />
+          </Routes>
+          <AuthModal 
+            isOpen={authOpen} 
+            onClose={() => { setAuthOpen(false); setAuthMode('login') }} 
+            onSuccess={handleAuthSuccess}
+            initialMode={authMode}
+          />
+        </>
+      )}
       {toast && (
-        <div className={`fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 md:px-5 md:py-3 rounded-xl shadow-2xl text-xs md:text-sm font-medium transition-all duration-300 max-w-[90vw] text-center ${
+        <div className={`fixed bottom-20 md:bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 md:px-5 md:py-3 rounded-xl shadow-2xl text-xs md:text-sm font-medium transition-all duration-300 max-w-[90vw] text-center ${
           toast.type === 'success' ? 'bg-[#22C55E] text-white' : 
           toast.type === 'info' ? 'bg-[#38BDF8] text-black' : 'bg-red-500 text-white'
         }`}>
